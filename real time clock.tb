@@ -1,0 +1,50 @@
+//testbench
+
+`timescale 1s / 1ms                                // 1s simulation time unit
+
+module rtc_tb;
+
+// Inputs
+  reg clk;
+  reg reset;
+
+// Outputs
+  wire [5:0] seconds;
+  wire [5:0] minutes;
+  wire [4:0] hours;
+
+// Instantiate the RTC module
+  rtc uut (
+    .clk(clk),
+    .reset(reset),
+    .seconds(seconds),
+    .minutes(minutes),
+    .hours(hours)
+  );
+
+// Clock generation: 1Hz clock (toggle every 0.5s)
+  initial begin
+    clk = 0;
+    forever #0.5 clk = ~clk;
+  end
+
+// Stimulus
+  initial begin
+    $display("Time\t\tHours:Minutes:Seconds");
+
+// Apply reset
+    reset = 1;
+    #2;
+    reset = 0;
+
+// Simulate for 100 seconds
+    repeat (100) begin
+      @(posedge clk);
+      $display("%t\t%0d:%0d:%0d", $time, hours, minutes, seconds);
+    end
+
+    $finish;
+  end
+
+endmodule
+
